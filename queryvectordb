@@ -1,0 +1,10 @@
+#Query the Vector Database
+query = "Which winery offers cave tours and specializes in Cabernet?"
+query_embedding = embed(query)
+
+results = collection.query(
+    query_embeddings=[query_embedding],
+    n_results=2
+)
+
+print(results)
