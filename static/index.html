@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Napa RAG Demo</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 24px; max-width: 900px; margin: auto; }
+    textarea { width: 100%; height: 80px; }
+    .btn { padding: 8px 14px; background:#0b74de;color:white;border:none;border-radius:6px;cursor:pointer; }
+    pre { background:#f6f8fa;padding:12px;border-radius:6px; white-space:pre-wrap; }
+    img.demo { max-width: 300px; float:right; margin-left: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Napa RAG — Demo</h1>
+  <img class="demo" src="/static/8c053073-1eaf-4125-a328-c094b08f49d1.png" alt="demo image from uploaded file"/>
+  <p>Ask a question about Napa Valley wineries:</p>
+  <textarea id="question" placeholder="Which winery offers cave tours and specializes in Cabernet?"></textarea>
+  <p>
+    <input id="token" placeholder="Bearer token" style="width:60%;padding:6px" />
+    <button class="btn" onclick="send()">Ask</button>
+  </p>
+  <h3>Answer</h3>
+  <pre id="answer">No answer yet.</pre>
+
+<script>
+async function send(){
+  const q = document.getElementById('question').value;
+  const token = document.getElementById('token').value;
+  const resp = await fetch('/query', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token
+    },
+    body: JSON.stringify({question: q, top_k: 3})
+  });
+  if(!resp.ok){
+    document.getElementById('answer').innerText = 'Error: ' + resp.status + ' ' + await resp.text();
+    return;
+  }
+  const data = await resp.json();
+  document.getElementById('answer').innerText = data.answer + "\n\nDocs used:\n" + JSON.stringify(data.docs_used, null, 2);
+}
+</script>
+</body>
+</html>
