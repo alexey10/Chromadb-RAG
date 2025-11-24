@@ -1,0 +1,16 @@
+#docker-compose.yml
+yaml
+
+version: "3.8"
+services:
+  rag:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - API_AUTH_TOKEN=${API_AUTH_TOKEN}
+    volumes:
+      - ./chroma_db:/app/chroma_db
+      - ./static:/app/static
+      - ./data:/app/data
