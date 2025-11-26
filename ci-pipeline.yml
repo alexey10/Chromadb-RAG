@@ -1,0 +1,44 @@
+CI/CD Embedding Pipeline Flow (Documents → Vector DB)
+
+            ┌──────────────────────────┐
+            │      GitHub Repo         │
+            │  docs / csv / scrapers   │
+            └────────────┬─────────────┘
+                         |
+                         | push / PR
+                         v
+               ┌──────────────────┐
+               │ GitHub Actions   │
+               │   (CI Pipeline)  │
+               └───────┬──────────┘
+                       |
+                       | run embedding job
+                       v
+    ┌──────────────────────────┐
+    │  Embedding Worker Job    │  <── uses Python + LangChain/Haystack
+    │  - load data             │
+    │  - clean/split           │
+    │  - call embed model      │
+    │  - produce vectors       │
+    └────────────┬─────────────┘
+                 |
+                 | upsert vectors
+                 v
+     ┌────────────────────────────┐
+     │    Vector Database         │
+     │  (Chroma / Pinecone /      │
+     │   Weaviate / Elastic)      │
+     └────────────┬───────────────┘
+                  |
+                  | publish metadata + version
+                  v
+         ┌──────────────────┐
+         │  GitHub Actions   │
+         │   (CD Pipeline)   │
+         └───────┬──────────┘
+                  |
+                  | deploy new RAG service
+                  v
+     ┌────────────────────────────────┐
+     │  API / RAG service (FastAPI)   │
+     └────────────────────────────────┘
